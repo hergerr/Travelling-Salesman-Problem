@@ -9,6 +9,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <list>
 
 using namespace std;
 
@@ -21,6 +22,7 @@ public:
     ~Graph();
     void read_from_file(string file_name);
     void read_from_user();
+    int calculate_route(list<int> path);
     void print();
     void clean();
 };

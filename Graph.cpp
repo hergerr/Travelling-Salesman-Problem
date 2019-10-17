@@ -22,6 +22,9 @@ void Graph::read_from_file(string file_name) {
         this->matrix[y].resize(this->size);
         for (int x = 0; x < this->size; ++x) {
             in >> this->matrix[y][x];
+            if (this->matrix[y][x] == -1) {
+                this->matrix[y][x] = 0;
+            }
         }
     }
 }
@@ -36,6 +39,8 @@ void Graph::print() {
         }
         cout << endl;
     }
+    list<int> lst = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+    cout << calculate_route(lst) << endl;
 }
 
 Graph::~Graph() {
@@ -55,6 +60,25 @@ void Graph::read_from_user() {
 }
 
 void Graph::clean() {
+    for (int i = 0; i < this->size; ++i) {
+        this->matrix[i].clear();
+    }
     this->matrix.clear();
     this->size = 0;
+}
+
+int Graph::calculate_route(list<int> path) {
+    if (path.size() == this->size) {
+        int result = 0;
+        int start = 0;
+        while (!path.empty()) {
+            result += this->matrix[start][path.front()];
+            start = path.front();
+            path.pop_front();
+        }
+
+        // powrot
+        result += this->matrix[start][0];
+        return result;
+    }
 }
