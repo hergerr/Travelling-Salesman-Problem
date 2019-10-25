@@ -26,11 +26,15 @@ int main() {
             case 0:
                 return 0;
             case 1:
+                graph.brute_force();
+                break;
             case 2:
             case 3:
+                graph.dynamic_programming();
+                break;
             case 4:
                 graph.clean();
-                graph.read_from_file("data17.txt");
+                graph.read_from_file("data10.txt");
                 break;
             case 5:
                 graph.clean();

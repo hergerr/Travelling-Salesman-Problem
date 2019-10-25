@@ -10,6 +10,7 @@
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <math.h>
 
 using namespace std;
 
@@ -23,6 +24,9 @@ public:
     void read_from_file(string file_name);
     void read_from_user();
     int calculate_route(list<int> path);
+    void brute_force();
+    int tree_search(int*, list<int>);
+    void dynamic_programming();
     void print();
     void clean();
 };

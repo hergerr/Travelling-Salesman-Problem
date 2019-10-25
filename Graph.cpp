@@ -39,8 +39,6 @@ void Graph::print() {
         }
         cout << endl;
     }
-    list<int> lst = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-    cout << calculate_route(lst) << endl;
 }
 
 Graph::~Graph() {
@@ -81,4 +79,80 @@ int Graph::calculate_route(list<int> path) {
         result += this->matrix[start][0];
         return result;
     }
+}
+
+int Graph::tree_search(int *best, list<int> vertex_list) {
+    if(vertex_list.size()== this->size){
+        int temp_result = calculate_route(vertex_list);
+        if(*best > temp_result){
+            *best = temp_result;
+            return 0;
+        }
+    }
+
+    for(int i=0; i<this->size; ++i){
+        bool exists = false;
+        for(int j: vertex_list){
+            if(i==j){
+                exists = true;
+                break;
+            }
+        }
+        if(!exists){
+            vertex_list.push_back(i);
+            tree_search(best, vertex_list);
+            vertex_list.pop_back();
+        }
+    }
+
+    return *best;
+}
+
+void Graph::brute_force() {
+    list<int> vertex_list;
+    vertex_list.push_back(0);
+    int best = 1 << 30;
+    int result = tree_search(&best, vertex_list);
+    cout << result << endl;
+}
+
+void Graph::dynamic_programming() {
+    int **dp = nullptr;
+    dp = new int*[1 << this->size]; //wszyskie mozliwe sciezki
+
+    for(int i=0; i<(1 << this->size); ++i){
+       dp[i] = new int[this->size]; //koncowy wierzcholek
+    }
+
+    for (int i  = 0; i < (1<<this->size); ++i) {
+        for(int j=0; j<this->size; ++j){
+            dp[i][j] = 1 << 30; // wszytkie koszty na niesskonczynosc
+        }
+    }
+
+    for(int i=0; i < this->size; i++){
+        dp[1<<i | 1][i] = this->matrix[0][i]; //koszt przejscia od 0 do n
+    }
+
+    for(int bit_mask=0; bit_mask < 1 << this->size; ++bit_mask ){
+        for(int v =0; v < this->size; ++v){
+            if(!(bit_mask & (1 << v))) continue;
+            for(int j = 0; j < this->size; ++j){
+                if(!(bit_mask & (1<<j)))
+                    dp[bit_mask | (1 << j)][j] = min(dp[bit_mask | (1 << j)][j], dp[bit_mask][v] + this->matrix[v][j]);
+            }
+        }
+    }
+
+    int result = 1<<30;
+    int sum;
+
+    for(int i = 0; i < this->size; i++){
+        sum = dp[(1 << this->size) -1 ][i] + this->matrix[i][0];
+        if(sum < result){
+            result = sum;
+        }
+    }
+
+    cout << result << endl;
 }
