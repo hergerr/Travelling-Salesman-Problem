@@ -117,11 +117,11 @@ void Graph::brute_force() {
 }
 
 void Graph::dynamic_programming() {
-    int **dp = nullptr;
+    int **dp = nullptr; //[sciezka hamiltona][zakonczona w wierzcholku]
     dp = new int*[1 << this->size]; //wszyskie mozliwe sciezki
 
     for(int i=0; i<(1 << this->size); ++i){
-       dp[i] = new int[this->size]; //koncowy wierzcholek
+       dp[i] = new int[this->size]; // wielkosc kolumny = rzad grafu
     }
 
     for (int i  = 0; i < (1<<this->size); ++i) {
@@ -136,10 +136,10 @@ void Graph::dynamic_programming() {
 
     for(int bit_mask=0; bit_mask < 1 << this->size; ++bit_mask ){
         for(int v =0; v < this->size; ++v){
-            if(!(bit_mask & (1 << v))) continue;
+            if(!(bit_mask & (1 << v))) continue;    // odfiltrowanie sciezek ktore nie zawierają v, a maja sie w nim konczyc
             for(int j = 0; j < this->size; ++j){
-                if(!(bit_mask & (1<<j)))
-                    dp[bit_mask | (1 << j)][j] = min(dp[bit_mask | (1 << j)][j], dp[bit_mask][v] + this->matrix[v][j]);
+                if(!(bit_mask & (1<<j)))    // wierzcholek j, ktory ma byc potencjalnym przedluzeniem sciezki, nie moze znajdowac sie na dotychczasowej sciezce do v
+                    dp[bit_mask | (1 << j)][j] = min(dp[bit_mask | (1 << j)][j], dp[bit_mask][v] + this->matrix[v][j]); // sprawdzenie czy korzystniej do sciezki konczacej sie w v dodać droge do j, czy obecna sciezka do j jest lepsza
             }
         }
     }
@@ -147,7 +147,7 @@ void Graph::dynamic_programming() {
     int result = 1<<30;
     int sum;
 
-    for(int i = 0; i < this->size; i++){
+    for(int i = 0; i < this->size; i++){ // szukanie minimalnego CYKLU w ostatnim wierszu
         sum = dp[(1 << this->size) -1 ][i] + this->matrix[i][0];
         if(sum < result){
             result = sum;

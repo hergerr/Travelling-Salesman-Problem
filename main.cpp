@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "Graph.h"
 
 using namespace std;
@@ -21,8 +22,10 @@ int main() {
         cout << "Choose option: ";
         cin >> option;
         cout << endl;
+        string file_name;
 
-        switch(option) {
+
+        switch (option) {
             case 0:
                 return 0;
             case 1:
@@ -33,8 +36,10 @@ int main() {
                 graph.dynamic_programming();
                 break;
             case 4:
-                graph.clean();
-                graph.read_from_file("data10.txt");
+                //graph.clean();
+                cout << "Podaj nazwe pliku" << endl;
+                cin >> file_name;
+                graph.read_from_file(file_name);
                 break;
             case 5:
                 graph.clean();
@@ -44,9 +49,7 @@ int main() {
                 graph.print();
 
         }
-    }
-    while( option != 0);
-
+    } while (option != 0);
 
 
     return 0;
