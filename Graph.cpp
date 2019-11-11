@@ -113,7 +113,7 @@ void Graph::brute_force() {
     vertex_list.push_back(0);
     int best = 1 << 30;
     int result = tree_search(&best, vertex_list);
-    cout << result << endl;
+    cout << "Result: " << result << endl;
 }
 
 void Graph::dynamic_programming() {
@@ -154,5 +154,5 @@ void Graph::dynamic_programming() {
         }
     }
 
-    cout << result << endl;
+    cout << "Result: " << result << endl;
 }

@@ -37,7 +37,7 @@ int main() {
                 break;
             case 4:
                 //graph.clean();
-                cout << "Podaj nazwe pliku" << endl;
+                cout << "Pass file name" << endl;
                 cin >> file_name;
                 graph.read_from_file(file_name);
                 break;

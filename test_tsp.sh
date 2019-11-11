@@ -1,3 +1,9 @@
 #/bin/bash
 cd /home/tymek/dev/C++/Travelling-Salesman/cmake-build-debug/
-./Travelling_Salesman <<< "4 data10.txt 1 0"
+
+for i in 10 11 12 13 14 15 16 17 18
+do
+  echo data${i}.txt
+  ./Travelling_Salesman <<< "4 data${i}.txt 3 0"
+done
+
