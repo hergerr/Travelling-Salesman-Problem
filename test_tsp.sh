@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-for i in 10 11 12 13 14 15 16 17 18 21 24
+for i in 10 11 12 13 14 15 16 17 18 21 24 26
 do
   ./measure_memory.sh "data${i}" &
   sleep 0.2
