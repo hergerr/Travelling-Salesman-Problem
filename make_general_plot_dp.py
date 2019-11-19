@@ -15,5 +15,4 @@ for i in (10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 24, 26):
     plt.ylabel('Ilość zajętej pamięci w kB')
 
 plt.legend()
-plt.savefig(f'Wykres_ogólny_dla_dp')
-
+plt.savefig(f'Wykres_ogolny_dla_dp', bbox_inches='tight')
