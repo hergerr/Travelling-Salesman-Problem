@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "Graph.h"
+#include <chrono>
 
 using namespace std;
 
@@ -24,12 +25,23 @@ int main() {
         cout << endl;
         string file_name;
 
+        int tests = 10;
+        chrono::duration<double> sum;
+        double average;
 
         switch (option) {
             case 0:
                 return 0;
             case 1:
-                graph.brute_force();
+                for(int i=0; i < tests; ++i){
+                    auto beginning = std::chrono::steady_clock::now();
+                    graph.brute_force();
+                    auto end = std::chrono::steady_clock::now();
+                    auto time = end - beginning;
+                    sum += time;
+                }
+                average = (sum / tests).count();
+                cout << "Average time: " << average << endl;
                 break;
             case 2:
             case 3:
