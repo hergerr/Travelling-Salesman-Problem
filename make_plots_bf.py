@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy
 
 
-for i in (10, 11, 12, 13):
+for i in (10, 11, 12):
     plt.clf()
     used_mem_list = []
     with open(f'data{i}_bf.txt') as file:
