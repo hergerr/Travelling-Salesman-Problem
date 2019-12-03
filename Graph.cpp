@@ -2,6 +2,7 @@
 // Created by tymek on 15/10/2019.
 //
 
+#include <algorithm>
 #include "Graph.h"
 
 void Graph::read_from_file(string file_name) {
@@ -155,4 +156,80 @@ void Graph::dynamic_programming() {
     }
 
     cout << "Result: " << result << endl;
+}
+
+int Graph::calculate_route(vector<int> path) {
+    int result = 0;
+    for(int i = 0; i < path.size() - 1; ++i){
+        result += matrix[path[i]][path[i+1]];
+    }
+    result += matrix[path.size()-1][path[0]];
+
+    return result;
+
+}
+
+void Graph::cooling() {
+    temperature *= COOLING_RATE;
+}
+
+vector<int> Graph::make_random_permutation(int size_of_permutation) {
+    vector<int> vec;
+    vec.reserve(size_of_permutation);
+    for(int i = 0; i < size_of_permutation; ++i){
+        vec.push_back(i);
+    }
+    random_shuffle(vec.begin() , vec.end());
+
+    return vec;
+}
+
+void Graph::sa() {
+    vector<int> best_solution;
+    vector<int> permutation = make_random_permutation(this->size);
+    vector<int> next_step(permutation); //kontruktor kopiujacy
+
+    this->temperature = 1e9;
+    int result = 1 << 30;
+
+    for (int i = 0; i < 50; ++i) { //liczba losowych miejsc startu
+        while(temperature >= 0.1){
+            int number_of_steps = 3 * this->size;
+            next_step = permutation;
+            int permutation_value = calculate_route(next_step);
+
+            while(number_of_steps-- > 0){
+                int first_position = rand() % this->size;   // potencjalne pozycja do zamiany
+                int second_position = rand() % this->size;
+
+                swap(next_step[first_position], next_step[second_position]);
+                permutation_value = calculate_route(next_step);
+                int diffrence = result - permutation_value;
+
+                if(diffrence > 0){
+                    result = permutation_value;
+                    best_solution = next_step;
+                }
+                if(diffrence > 0 || (diffrence < 0 && get_probability(diffrence) > ((double)rand()/RAND_MAX) + 1)){
+                    permutation=next_step;
+                    break;
+                } else {
+                    swap(next_step[first_position], next_step[second_position]);
+                }
+
+            }
+
+            cooling();
+
+        }
+
+        temperature = 1e9;
+        permutation = make_random_permutation(this->size);
+    }
+
+    cout << "Result: " << result;
+}
+
+double Graph::get_probability(int diffrence) {
+    return exp(diffrence/temperature);
 }

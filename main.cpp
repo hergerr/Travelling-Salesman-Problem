@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <time.h>
 #include "Graph.h"
 
 using namespace std;
@@ -8,6 +9,7 @@ int main() {
     int option;
     Graph graph;
     cout << "Travelling Salesman Problem - MENU";
+    srand(time(NULL));
 
     do {
         cout << endl;
@@ -18,6 +20,7 @@ int main() {
         cout << "4. Read from file" << endl;
         cout << "5. Read from user" << endl;
         cout << "6. Display" << endl;
+        cout << "7. SA" << endl;
         cout << "0. Exit" << endl;
         cout << "Choose option: ";
         cin >> option;
@@ -32,6 +35,7 @@ int main() {
                 graph.brute_force();
                 break;
             case 2:
+                break;
             case 3:
                 graph.dynamic_programming();
                 break;
@@ -47,6 +51,10 @@ int main() {
                 break;
             case 6:
                 graph.print();
+                break;
+            case 7:
+                graph.sa();
+                break;
 
         }
     } while (option != 0);
