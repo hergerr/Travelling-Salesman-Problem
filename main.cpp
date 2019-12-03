@@ -21,6 +21,7 @@ int main() {
         cout << "5. Read from user" << endl;
         cout << "6. Display" << endl;
         cout << "7. SA" << endl;
+        cout << "8. TS" << endl;
         cout << "0. Exit" << endl;
         cout << "Choose option: ";
         cin >> option;
@@ -54,6 +55,9 @@ int main() {
                 break;
             case 7:
                 graph.sa();
+                break;
+            case 8:
+                graph.ts();
                 break;
 
         }

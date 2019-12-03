@@ -39,6 +39,8 @@ public:
     vector<int> make_random_permutation(int size);
     double get_probability(int diffrence);
 
+    void ts();
+
 };
 
 
