@@ -276,11 +276,11 @@ void Graph::ts() {
                         }
                     }
 
-                    swap(permutation[first_position], permutation[second_position]); // jesli zmiana jest niekorzystna, wycofujemy sie z niej
+                    swap(permutation[first_position], permutation[second_position]); // cofniecie zmiany
                 }
             }
             permutation = next_step; // zapisanie najlepszej permutacji
-            tabu_matrix[first_vertex_to_swap][second_vertex_to_swap] += this->size; // zapisanie wierzcholkow do macierzy tabu
+            tabu_matrix[first_vertex_to_swap][second_vertex_to_swap] = step + this->size; // zapisanie wierzcholkow do macierzy tabu
         }
         permutation = make_random_permutation(this->size);  // nowa permutacja dla nowego pokolenia
 
