@@ -23,10 +23,10 @@ class Graph {
 
     vector<vector< int > > population;
     vector<int> fitness;
-    int population_size = 1000;
+    int population_size = 5000;
     int generations_number = 500;
     int tournament_number = 5;
-    float cross_rate = 0.85;
+    float cross_rate = 0.02;
     float mutation_rate = 0.02;
 
 public:

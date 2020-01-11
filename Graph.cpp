@@ -329,7 +329,7 @@ void Graph::ga() {
         }
     }
 
-    cout << "Result " << best << endl;
+    cout << "Result: " << best << endl;
 }
 
 void Graph::make_population() {
