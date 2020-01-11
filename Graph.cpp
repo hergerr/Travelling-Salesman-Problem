@@ -362,6 +362,9 @@ void Graph::select() {
         selected_population.push_back(this->population[best_index]);
     }
     this->population = selected_population;
+    for (int k = 0; k < this->population_size; ++k) {
+        this->fitness[k] = calculate_route(this->population[k]);
+    }
 }
 
 void Graph::ordered_crossover(vector<int> &first_parent, vector<int> &second_parent) {
