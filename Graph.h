@@ -21,6 +21,14 @@ class Graph {
     double temperature = 1e9;
     double COOLING_RATE = 0.95;
 
+    vector<vector< int > > population;
+    vector<int> fitness;
+    int population_size = 5000;
+    int generations_number = 500;
+    int tournament_number = 5;
+    float cross_rate = 0.85;
+    float mutation_rate = 0.01;
+
 public:
     Graph();
     ~Graph();
@@ -38,8 +46,13 @@ public:
     void cooling();
     vector<int> make_random_permutation(int size);
     double get_probability(int diffrence);
-
     void ts();
+
+    void ga();
+    void make_population();
+    void select();
+    void ordered_crossover(vector<int> &first_parent, vector<int> &second_parent);
+    void inversion_mutation(vector<int> &path);
 
 };
 

@@ -166,7 +166,7 @@ int Graph::calculate_route(vector<int> path) {
     for (int i = 0; i < path.size() - 1; ++i) {
         result += matrix[path[i]][path[i + 1]];
     }
-    result += matrix[path[size-1]][path[0]];
+    result += matrix[path[size - 1]][path[0]];
 
 
     return result;
@@ -218,7 +218,8 @@ void Graph::sa() {
                     permutation = next_step;    // jesli permutacja jest lepsza, lub temperatura i roznica pozwalaja pogorszyc, zapisz te permutacje
                     break;
                 } else {
-                    swap(next_step[first_position], next_step[second_position]); // w przeciwnym wypadku wycofaj te zmiane
+                    swap(next_step[first_position],
+                         next_step[second_position]); // w przeciwnym wypadku wycofaj te zmiane
                 }
 
             }
@@ -239,7 +240,7 @@ double Graph::get_probability(int diffrence) {
 }
 
 void Graph::ts() {
-    vector<vector< int > > tabu_matrix;
+    vector<vector<int> > tabu_matrix;
     vector<int> best_solution;
     vector<int> permutation = make_random_permutation(this->size);
     vector<int> next_step(permutation); //kontruktor kopiujacy
@@ -268,7 +269,8 @@ void Graph::ts() {
                     }
 
                     if (current_value < next_step_val) {    // jesli zamiana poprawia dlugosc sciezki
-                        if (tabu_matrix[second_position][first_position] < step) {  //jesli zamiany nie ma w macierzy tabu
+                        if (tabu_matrix[second_position][first_position] <
+                            step) {  //jesli zamiany nie ma w macierzy tabu
                             next_step_val = current_value;  // zapisz wartosc tej permutacji
                             next_step = permutation;    // zapisz te permutacje
                             first_vertex_to_swap = second_position; // zapisanie ktore wierzcholki zostaly zamienione
@@ -280,7 +282,8 @@ void Graph::ts() {
                 }
             }
             permutation = next_step; // zapisanie najlepszej permutacji
-            tabu_matrix[first_vertex_to_swap][second_vertex_to_swap] = step + this->size; // zapisanie wierzcholkow do macierzy tabu
+            tabu_matrix[first_vertex_to_swap][second_vertex_to_swap] =
+                    step + this->size; // zapisanie wierzcholkow do macierzy tabu
         }
         permutation = make_random_permutation(this->size);  // nowa permutacja dla nowego pokolenia
 
@@ -294,3 +297,159 @@ void Graph::ts() {
     cout << "Result: " << result << endl;
 
 }
+
+void Graph::ga() {
+    make_population();
+    for (int j = 0; j < this->generations_number; ++j) {
+        select();
+        for (int i = 0; i < (int) (this->population_size * this->cross_rate); ++i) {
+            int rand_index_1, rand_index_2;
+            do {
+                rand_index_1 = rand() % this->population_size;
+                rand_index_2 = rand() % this->population_size;
+            } while (rand_index_1 == rand_index_2);
+
+            ordered_crossover(population[rand_index_1], population[rand_index_2]);
+        }
+
+        for (int i = 0; i < (int) (this->population_size * this->mutation_rate); ++i) {
+            int rand_index = rand() % this->population_size;
+            inversion_mutation(population[rand_index]);
+        }
+    }
+
+    int best = INT32_MAX;
+    vector<int> best_route = this->population[0];
+
+    for (int k = 0; k < this->population_size; ++k) {
+        this->fitness[k] = calculate_route(this->population[k]);
+        if(best > this->fitness[k]){
+            best = this->fitness[k];
+            best_route = this->population[k];
+        }
+    }
+
+    cout << "Result " << best << endl;
+}
+
+void Graph::make_population() {
+    this->population.reserve(this->population_size);
+    this->fitness.reserve(this->population_size);
+
+
+    for (int i = 0; i < this->population_size; ++i) {
+        vector<int> permutation = make_random_permutation(this->size);
+        this->population.push_back(permutation);
+        this->fitness.push_back(calculate_route(permutation));
+    }
+}
+
+void Graph::select() {
+    vector<vector<int>> selected_population;
+    selected_population.reserve(this->population_size);
+
+    for (int j = 0; j < this->population_size; ++j) {
+        int best = INT32_MAX;
+        int best_index = -1;
+        for (int i = 0; i < this->tournament_number; ++i) {
+            int random_index = rand() % this->population_size;
+            int random_index_value = this->fitness[random_index];
+            if (best > random_index_value) {
+                best = random_index_value;
+                best_index = random_index;
+            }
+        }
+        selected_population.push_back(this->population[best_index]);
+    }
+    this->population = selected_population;
+}
+
+void Graph::ordered_crossover(vector<int> &first_parent, vector<int> &second_parent) {
+    int k1, k2;
+    vector<int> first_child(this->size, -1);
+    vector<int> second_child(this->size, -1);
+
+    do {
+        k1 = rand() % (this->size -2) + 1;
+        k2 = rand() % (this->size -2) + 1;  //in case of hitting last index, while loop won't break (numbers from 1 to n-1)
+    } while (k1 == k2);
+
+    if (k1 > k2) {
+        swap(k1, k2);
+    }
+
+    for (int i = k1; i <= k2; ++i) {
+        first_child[i] = second_parent[i];
+        second_child[i] = first_parent[i];
+    }
+
+    vector<int>::iterator child_iterator = first_child.begin() + k2 + 1;
+    vector<int>::iterator parent_iterator = first_parent.begin() + k2 + 1;
+
+    while (child_iterator != first_child.begin() + k1) {
+        if (first_child.end() ==
+            find(first_child.begin(), first_child.end(), *parent_iterator)) { // jesli w potomku nie ma miasta z rodzica
+            *child_iterator = *parent_iterator;
+
+            if (child_iterator == first_child.end() - 1)    //end zwraca iterator ustawiony na element 'past the end'
+                child_iterator = first_child.begin();       //powrot do poczatku
+            else
+                child_iterator++;
+
+            if (parent_iterator == first_parent.end() - 1)
+                parent_iterator = first_parent.begin();
+            else
+                parent_iterator++;
+        } else {    // jesli miasto juz wystapilo to pomin i idz dalej
+            if (parent_iterator == first_parent.end() - 1)
+                parent_iterator = first_parent.begin();
+            else
+                parent_iterator++;
+        }
+    }
+
+    child_iterator = second_child.begin() + k2 + 1;
+    parent_iterator = second_parent.begin() + k2 + 1;
+
+    while (child_iterator != second_child.begin() + k1) {
+        if (second_child.end() == find(second_child.begin(), second_child.end(), *parent_iterator)) {
+            *child_iterator = *parent_iterator;
+
+            if (child_iterator == second_child.end() - 1)
+                child_iterator = second_child.begin();
+            else
+                child_iterator++;
+
+            if (parent_iterator == second_parent.end() - 1)
+                parent_iterator = second_parent.begin();
+            else
+                parent_iterator++;
+        } else {    // jesli miasto juz wystapilo to pomin i idz dalej
+            if (parent_iterator == second_parent.end() - 1)
+                parent_iterator = second_parent.begin();
+            else
+                parent_iterator++;
+        }
+    }
+
+    first_parent = first_child;
+    second_parent = second_child;
+}
+
+void Graph::inversion_mutation(vector<int> &path) {
+    int rand1, rand2;   // rand 1 -dolna granica, rand2 - gorna granica
+    do {
+        rand1 = rand() % this->size;
+        rand2 = rand() % this->size;
+    } while (rand1 == rand2);
+
+    if(rand1 > rand2){
+        swap(rand1, rand2);
+    }
+
+    for(int i = rand1, j = rand2; i < j ; ++i, --j){
+        std::swap(path[i], path[j]);
+    }
+}
+
+

@@ -22,6 +22,7 @@ int main() {
         cout << "6. Display" << endl;
         cout << "7. SA" << endl;
         cout << "8. TS" << endl;
+        cout << "9. Genetic algorithm" << endl;
         cout << "0. Exit" << endl;
         cout << "Choose option: ";
         cin >> option;
@@ -59,6 +60,8 @@ int main() {
             case 8:
                 graph.ts();
                 break;
+            case 9:
+                graph.ga();
 
         }
     } while (option != 0);
