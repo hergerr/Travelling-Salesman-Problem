@@ -12,6 +12,8 @@
 #include <list>
 #include <math.h>
 
+#include "Ant.h"
+
 using namespace std;
 
 class Graph {
@@ -53,6 +55,12 @@ public:
     void select();
     void ordered_crossover(vector<int> &first_parent, vector<int> &second_parent);
     void inversion_mutation(vector<int> &path);
+
+    void pa();
+    void calculate_ant_routes(Ant* ant, vector<vector<int>> &routes, vector<vector<double>> &pheromones);
+    void update_pheromones(vector<vector<double>> &pheromones, vector<vector<int>> &routes);
+    double phi(int first_city, int second_city, Ant* ant, vector<vector<double>> &pheromones);
+    int get_next_city(vector<double> &probabilities);
 
 };
 

@@ -455,4 +455,121 @@ void Graph::inversion_mutation(vector<int> &path) {
     }
 }
 
+void Graph::pa() {
+    int best = INT32_MAX;
+    vector<int> best_path;
+    int iteration_number = 100;
+    int number_of_ants = this->size;
+    vector<vector<int>> ant_routes(number_of_ants);
+    vector<vector<double>> pheromones(this->size);
+
+    for (int i = 0; i < number_of_ants; ++i) {
+        ant_routes[i].resize(number_of_ants, -1);
+    }
+
+    for (int i = 0; i < this->size; ++i) {
+        pheromones[i].resize(this->size);
+        for (int j = 0; j < this->size; ++j) {
+            pheromones[i][j] = (double)rand()/(double)RAND_MAX * this->size / this->matrix[0][1];
+        }
+    }
+
+    for (int i = 0; i < iteration_number; ++i) {
+        for (int j = 0; j < number_of_ants; ++j) {
+            for (vector<int>::iterator it=ant_routes[j].begin(); it != ant_routes[j].end(); it++) {
+                *it = -1; // przygotowanie trasy
+            }
+            Ant *ant = new Ant(j, this->size);
+            calculate_ant_routes(ant, ant_routes, pheromones);
+        }
+    }
+
+    update_pheromones(pheromones, ant_routes);
+
+    for (int k = 0; k < this->size; ++k) {
+        int temp = calculate_route(ant_routes[k]);
+        if(temp < best){
+            best = temp;
+            best_path = ant_routes[k];
+        }
+    }
+
+    cout << "Result: " << best;
+}
+
+void Graph::update_pheromones(vector<vector<double>> &pheromones, vector<vector<int>> &routes) {
+    double q = this->size; // ilosc zostawionego feromonu na trasie
+    double ro = 0.5;
+
+    for (int i = 0; i < routes.size(); ++i) {
+        int route_for_i = calculate_route(routes[i]);
+        for (int j = 0; j < routes.size() - 1; ++j) {
+            int city = routes[i][j]; // jte miasto itej mrowki
+            int next_city = routes[i][j+1];
+
+            pheromones[city][next_city] = (1 - ro) * pheromones[city][next_city] + q/(double)route_for_i;
+            pheromones[next_city][city] = (1 - ro) * pheromones[next_city][city] + q/(double)route_for_i;
+        }
+    }
+
+}
+
+double Graph::phi(int first_city, int second_city, Ant *ant, vector<vector<double>> &pheromones) {
+    double a = 1.1;
+    double b = 5.5;
+
+    // eta przejscia do kolejnego miasta
+    double eta_ij = (double)pow(1.0/this->matrix[first_city][second_city], b);
+    double tau_ij = (double)pow(pheromones[first_city][second_city], a);
+    double sum = 0;
+
+    for (int i = 0; i < this->size; ++i) {
+        if(i == first_city)
+            continue;
+        if(!ant->visited[i]){
+            double eta = (double)pow(1.0/this->matrix[first_city][i], b);
+            double tau = (double)pow(pheromones[first_city][i], a);
+            sum += eta * tau;
+        }
+    }
+
+    return (eta_ij * tau_ij)/(sum);
+}
+
+int Graph::get_next_city(vector<double> &probabilities) {
+    double x = (double)rand()/(double)RAND_MAX;
+
+    int i = 0;
+    double sum = probabilities[i];
+    while (sum < x){
+        ++i;
+        sum += probabilities[i];
+    }
+
+    return i;
+}
+
+void Graph::calculate_ant_routes(Ant *ant, vector<vector<int>> &routes, vector<vector<double>> &pheromones) {
+    vector<double> probabilities;
+
+    routes[ant->number][0] = ant->number;
+    ant->visited[ant->number] = true;
+
+    for (int i = 0; i < this->size - 1; ++i) {
+        int city_i = routes[ant->number][i];
+        probabilities.clear();
+        probabilities.resize(this->size, 0.0);
+        for (int city_second = 0; city_second < this->size; ++city_second) {
+            if(city_i == city_second)
+                continue;
+            if(!ant->visited[city_second]){
+                probabilities[city_second] = phi(city_i, city_second, ant, pheromones);
+            }
+        }
+        routes[ant->number][i+1] = get_next_city(probabilities);
+        ant->visited[routes[ant->number][i+1]] = true;
+    }
+
+}
+
 

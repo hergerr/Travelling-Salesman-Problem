@@ -3,4 +3,4 @@ project(Travelling_Salesman)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(Travelling_Salesman main.cpp Graph.cpp Graph.h)
+add_executable(Travelling_Salesman main.cpp Graph.cpp Graph.h Ant.cpp Ant.h)
