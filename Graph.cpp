@@ -552,22 +552,22 @@ int Graph::get_next_city(vector<double> &probabilities) {
 void Graph::calculate_ant_routes(Ant *ant, vector<vector<int>> &routes, vector<vector<double>> &pheromones) {
     vector<double> probabilities;
 
-    routes[ant->number][0] = ant->number;
-    ant->visited[ant->number] = true;
+    routes[ant->number][0] = ant->number;   // wierzcholek poczatkowy (0) dla mroki n to n
+    ant->visited[ant->number] = true;       // jest odwiedzony
 
     for (int i = 0; i < this->size - 1; ++i) {
-        int city_i = routes[ant->number][i];
+        int city_i = routes[ant->number][i];    //i-te miasto mrowki
         probabilities.clear();
         probabilities.resize(this->size, 0.0);
-        for (int city_second = 0; city_second < this->size; ++city_second) {
+        for (int city_second = 0; city_second < this->size; ++city_second) {    // liczenie prawdopodobienstwa dla wszsystkich miast
             if(city_i == city_second)
                 continue;
             if(!ant->visited[city_second]){
                 probabilities[city_second] = phi(city_i, city_second, ant, pheromones);
             }
         }
-        routes[ant->number][i+1] = get_next_city(probabilities);
-        ant->visited[routes[ant->number][i+1]] = true;
+        routes[ant->number][i+1] = get_next_city(probabilities);    // zdecydowanie do ktorej krawedzi pojsc
+        ant->visited[routes[ant->number][i+1]] = true;  // zaznaczenie w liscie odwiedzonych
     }
 
 }
