@@ -516,7 +516,7 @@ void Graph::update_pheromones(vector<vector<double>> &pheromones, vector<vector<
 
 double Graph::phi(int first_city, int second_city, Ant *ant, vector<vector<double>> &pheromones) {
     double a = 1.1;
-    double b = 5.5;
+    double b = 5.5; // parametr beta regulujący wplyw visibility
 
     // eta przejscia do kolejnego miasta
     double eta_ij = (double)pow(1.0/this->matrix[first_city][second_city], b);
