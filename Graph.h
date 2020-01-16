@@ -28,7 +28,7 @@ class Graph {
     int population_size = 5000;
     int generations_number = 500;
     int tournament_number = 5;
-    float cross_rate = 0.02;
+    float cross_rate = 0.2;
     float mutation_rate = 0.02;
 
 public:

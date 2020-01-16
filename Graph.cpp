@@ -300,6 +300,8 @@ void Graph::ts() {
 
 void Graph::ga() {
     make_population();
+    int best = INT32_MAX;
+    vector<int> best_route = this->population[0];
     for (int j = 0; j < this->generations_number; ++j) {
         select();
         for (int i = 0; i < (int) (this->population_size * this->cross_rate); ++i) {
@@ -316,18 +318,16 @@ void Graph::ga() {
             int rand_index = rand() % this->population_size;
             inversion_mutation(population[rand_index]);
         }
-    }
 
-    int best = INT32_MAX;
-    vector<int> best_route = this->population[0];
-
-    for (int k = 0; k < this->population_size; ++k) {
-        this->fitness[k] = calculate_route(this->population[k]);
-        if(best > this->fitness[k]){
-            best = this->fitness[k];
-            best_route = this->population[k];
+        for (int k = 0; k < this->population_size; ++k) {
+            this->fitness[k] = calculate_route(this->population[k]);
+            if (best > this->fitness[k]) {
+                best = this->fitness[k];
+                best_route = this->population[k];
+            }
         }
     }
+
 
     cout << "Result: " << best << endl;
 }
@@ -373,8 +373,9 @@ void Graph::ordered_crossover(vector<int> &first_parent, vector<int> &second_par
     vector<int> second_child(this->size, -1);
 
     do {
-        k1 = rand() % (this->size -2) + 1;
-        k2 = rand() % (this->size -2) + 1;  //in case of hitting last index, while loop won't break (numbers from 1 to n-1)
+        k1 = rand() % (this->size - 2) + 1;
+        k2 = rand() % (this->size - 2) +
+             1;  //in case of hitting last index, while loop won't break (numbers from 1 to n-1)
     } while (k1 == k2);
 
     if (k1 > k2) {
@@ -446,11 +447,11 @@ void Graph::inversion_mutation(vector<int> &path) {
         rand2 = rand() % this->size;
     } while (rand1 == rand2);
 
-    if(rand1 > rand2){
+    if (rand1 > rand2) {
         swap(rand1, rand2);
     }
 
-    for(int i = rand1, j = rand2; i < j ; ++i, --j){
+    for (int i = rand1, j = rand2; i < j; ++i, --j) {
         std::swap(path[i], path[j]);
     }
 }
@@ -470,13 +471,13 @@ void Graph::pa() {
     for (int i = 0; i < this->size; ++i) {
         pheromones[i].resize(this->size);
         for (int j = 0; j < this->size; ++j) {
-            pheromones[i][j] = (double)rand()/(double)RAND_MAX * this->size / this->matrix[0][1];
+            pheromones[i][j] = (double) rand() / (double) RAND_MAX * this->size / this->matrix[0][1];
         }
     }
 
     for (int i = 0; i < iteration_number; ++i) {
         for (int j = 0; j < number_of_ants; ++j) {
-            for (vector<int>::iterator it=ant_routes[j].begin(); it != ant_routes[j].end(); it++) {
+            for (vector<int>::iterator it = ant_routes[j].begin(); it != ant_routes[j].end(); it++) {
                 *it = -1; // przygotowanie trasy
             }
             Ant *ant = new Ant(j, this->size);
@@ -488,7 +489,7 @@ void Graph::pa() {
 
     for (int k = 0; k < this->size; ++k) {
         int temp = calculate_route(ant_routes[k]);
-        if(temp < best){
+        if (temp < best) {
             best = temp;
             best_path = ant_routes[k];
         }
@@ -505,10 +506,10 @@ void Graph::update_pheromones(vector<vector<double>> &pheromones, vector<vector<
         int route_for_i = calculate_route(routes[i]);
         for (int j = 0; j < routes.size() - 1; ++j) {
             int city = routes[i][j]; // jte miasto itej mrowki
-            int next_city = routes[i][j+1];
+            int next_city = routes[i][j + 1];
 
-            pheromones[city][next_city] = (1 - ro) * pheromones[city][next_city] + q/(double)route_for_i;
-            pheromones[next_city][city] = (1 - ro) * pheromones[next_city][city] + q/(double)route_for_i;
+            pheromones[city][next_city] = (1 - ro) * pheromones[city][next_city] + q / (double) route_for_i;
+            pheromones[next_city][city] = (1 - ro) * pheromones[next_city][city] + q / (double) route_for_i;
         }
     }
 
@@ -519,29 +520,29 @@ double Graph::phi(int first_city, int second_city, Ant *ant, vector<vector<doubl
     double b = 5.5; // parametr beta regulujący wplyw visibility
 
     // eta przejscia do kolejnego miasta
-    double eta_ij = (double)pow(1.0/this->matrix[first_city][second_city], b);
-    double tau_ij = (double)pow(pheromones[first_city][second_city], a);
+    double eta_ij = (double) pow(1.0 / this->matrix[first_city][second_city], b);
+    double tau_ij = (double) pow(pheromones[first_city][second_city], a);
     double sum = 0;
 
     for (int i = 0; i < this->size; ++i) {
-        if(i == first_city)
+        if (i == first_city)
             continue;
-        if(!ant->visited[i]){
-            double eta = (double)pow(1.0/this->matrix[first_city][i], b);
-            double tau = (double)pow(pheromones[first_city][i], a);
+        if (!ant->visited[i]) {
+            double eta = (double) pow(1.0 / this->matrix[first_city][i], b);
+            double tau = (double) pow(pheromones[first_city][i], a);
             sum += eta * tau;
         }
     }
 
-    return (eta_ij * tau_ij)/(sum);
+    return (eta_ij * tau_ij) / (sum);
 }
 
 int Graph::get_next_city(vector<double> &probabilities) {
-    double x = (double)rand()/(double)RAND_MAX;
+    double x = (double) rand() / (double) RAND_MAX;
 
     int i = 0;
     double sum = probabilities[i];
-    while (sum < x){
+    while (sum < x) {
         ++i;
         sum += probabilities[i];
     }
@@ -559,15 +560,16 @@ void Graph::calculate_ant_routes(Ant *ant, vector<vector<int>> &routes, vector<v
         int city_i = routes[ant->number][i];    //i-te miasto mrowki
         probabilities.clear();
         probabilities.resize(this->size, 0.0);
-        for (int city_second = 0; city_second < this->size; ++city_second) {    // liczenie prawdopodobienstwa dla wszsystkich miast
-            if(city_i == city_second)
+        for (int city_second = 0;
+             city_second < this->size; ++city_second) {    // liczenie prawdopodobienstwa dla wszsystkich miast
+            if (city_i == city_second)
                 continue;
-            if(!ant->visited[city_second]){
+            if (!ant->visited[city_second]) {
                 probabilities[city_second] = phi(city_i, city_second, ant, pheromones);
             }
         }
-        routes[ant->number][i+1] = get_next_city(probabilities);    // zdecydowanie do ktorej krawedzi pojsc
-        ant->visited[routes[ant->number][i+1]] = true;  // zaznaczenie w liscie odwiedzonych
+        routes[ant->number][i + 1] = get_next_city(probabilities);    // zdecydowanie do ktorej krawedzi pojsc
+        ant->visited[routes[ant->number][i + 1]] = true;  // zaznaczenie w liscie odwiedzonych
     }
 
 }

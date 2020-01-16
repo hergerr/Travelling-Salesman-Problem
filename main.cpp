@@ -63,6 +63,7 @@ int main() {
                 break;
             case 9:
                 graph.ga();
+                break;
             case 10:
                 graph.pa();
         }
