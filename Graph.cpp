@@ -483,9 +483,9 @@ void Graph::pa() {
             Ant *ant = new Ant(j, this->size);
             calculate_ant_routes(ant, ant_routes, pheromones);
         }
+        update_pheromones(pheromones, ant_routes);
     }
 
-    update_pheromones(pheromones, ant_routes);
 
     for (int k = 0; k < this->size; ++k) {
         int temp = calculate_route(ant_routes[k]);
