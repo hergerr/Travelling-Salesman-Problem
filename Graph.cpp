@@ -256,7 +256,7 @@ void Graph::ts() {
 
             int first_vertex_to_swap = 0, second_vertex_to_swap = 0, next_step_val = 1 << 30;
 
-            for (int first_position = 0; first_position < this->size; ++first_position) {
+            for (int first_position = 0; first_position < this->size; ++first_position) {   // szukanie najkorzystniejszego przejscia
                 for (int second_position = first_position + 1; second_position < this->size; ++second_position) {
 
                     swap(permutation[first_position], permutation[second_position]);//zamiana w permutacji
@@ -283,7 +283,7 @@ void Graph::ts() {
             }
             permutation = next_step; // zapisanie najlepszej permutacji
             tabu_matrix[first_vertex_to_swap][second_vertex_to_swap] =
-                    step + this->size; // zapisanie wierzcholkow do macierzy tabu
+                    step + this->size; // zapisanie wierzcholkow ze znalezionego najkorzystniejszego przejscia do macierzy tabu
         }
         permutation = make_random_permutation(this->size);  // nowa permutacja dla nowego pokolenia
 
